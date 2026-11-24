@@ -40,6 +40,13 @@ func TestMachinesNonZonalRegion(t *testing.T) {
 			wantZone:            "",
 		},
 		{
+			name:                "westus uses availability set",
+			region:              "westus",
+			zones:               []string{""},
+			wantAvailabilitySet: "test-cluster_control-plane-as",
+			wantZone:            "",
+		},
+		{
 			name:                "uaenorth does not set availability set",
 			region:              "uaenorth",
 			zones:               []string{"1", "2", "3"},

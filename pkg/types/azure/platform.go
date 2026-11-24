@@ -236,10 +236,18 @@ func (p *Platform) NetworkSecurityGroupName(infraID string) string {
 	return fmt.Sprintf("%s-nsg", infraID)
 }
 
+// nonZonalRegions are Azure regions that do not support Availability Zones
+// and require Availability Set placement for IPI.
+var nonZonalRegions = map[string]struct{}{
+	"uaecentral": {},
+	"westus":     {},
+}
+
 // IsNonZonalRegion reports whether the configured Azure region does not
 // support Availability Zones and requires Availability Set placement.
 func (p *Platform) IsNonZonalRegion() bool {
-	return strings.EqualFold(p.Region, "uaecentral")
+	_, ok := nonZonalRegions[strings.ToLower(p.Region)]
+	return ok
 }
 
 // GetStorageAccountName takes an infraID and generates a

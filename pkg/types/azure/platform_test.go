@@ -21,6 +21,8 @@ func TestIsNonZonalRegion(t *testing.T) {
 	}{
 		{name: "uaecentral", region: "uaecentral", expected: true},
 		{name: "uaecentral mixed case", region: "UAECentral", expected: true},
+		{name: "westus", region: "westus", expected: true},
+		{name: "westus mixed case", region: "WestUS", expected: true},
 		{name: "uaenorth", region: "uaenorth", expected: false},
 		{name: "eastus", region: "eastus", expected: false},
 		{name: "empty", region: "", expected: false},

@@ -891,6 +891,16 @@ func TestValidateMachinePoolNonZonalRegion(t *testing.T) {
 			expected: `^test-path\.zones: Invalid value: \["1"\]: Availability Zones are not supported in region uaecentral$`,
 		},
 		{
+			name:   "westus empty zones",
+			region: "westus",
+		},
+		{
+			name:     "westus with zones",
+			region:   "westus",
+			zones:    []string{"1"},
+			expected: `^test-path\.zones: Invalid value: \["1"\]: Availability Zones are not supported in region westus$`,
+		},
+		{
 			name:   "uaenorth with zones",
 			region: "uaenorth",
 			zones:  []string{"1", "2", "3"},
