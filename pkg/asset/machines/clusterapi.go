@@ -246,11 +246,17 @@ func (c *ClusterAPI) Generate(ctx context.Context, dependencies asset.Parents) e
 		}
 
 		if len(mpool.Zones) == 0 {
-			azs, err := installConfig.Azure.VMAvailabilityZones(ctx, mpool.InstanceType)
-			if err != nil {
-				return fmt.Errorf("failed to fetch availability zones: %w", err)
+			if ic.Platform.Azure.IsNonZonalRegion() {
+				// Non-zonal regions do not support Availability Zones; use an
+				// empty zone so machines are placed via Availability Sets.
+				mpool.Zones = []string{""}
+			} else {
+				azs, err := installConfig.Azure.VMAvailabilityZones(ctx, mpool.InstanceType)
+				if err != nil {
+					return fmt.Errorf("failed to fetch availability zones: %w", err)
+				}
+				mpool.Zones = azs
 			}
-			mpool.Zones = azs
 		}
 		if len(mpool.Zones) == 0 {
 			// if no azs are given we set to []string{""} for convenience over later operations.

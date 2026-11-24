@@ -375,15 +375,21 @@ func (m *Master) Generate(ctx context.Context, dependencies asset.Parents) error
 		}
 
 		if len(mpool.Zones) == 0 {
-			azs, err := installConfig.Azure.VMAvailabilityZones(ctx, mpool.InstanceType)
-			if err != nil {
-				return errors.Wrap(err, "failed to fetch availability zones")
-			}
-			mpool.Zones = azs
-			if len(azs) == 0 {
-				// if no azs are given we set to []string{""} for convenience over later operations.
-				// It means no-zoned for the machine API
+			if ic.Platform.Azure.IsNonZonalRegion() {
+				// Non-zonal regions do not support Availability Zones; use an
+				// empty zone so machines are placed via Availability Sets.
 				mpool.Zones = []string{""}
+			} else {
+				azs, err := installConfig.Azure.VMAvailabilityZones(ctx, mpool.InstanceType)
+				if err != nil {
+					return errors.Wrap(err, "failed to fetch availability zones")
+				}
+				mpool.Zones = azs
+				if len(azs) == 0 {
+					// if no azs are given we set to []string{""} for convenience over later operations.
+					// It means no-zoned for the machine API
+					mpool.Zones = []string{""}
+				}
 			}
 		}
 

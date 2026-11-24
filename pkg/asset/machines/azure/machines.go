@@ -297,7 +297,7 @@ func provider(platform *azure.Platform, mpool *azure.MachinePool, osImage string
 		spec.Diagnostics.Boot = bootDiagnostics.Boot
 	}
 
-	if platform.CloudName == azure.StackCloud {
+	if platform.CloudName == azure.StackCloud || platform.IsNonZonalRegion() {
 		spec.AvailabilitySet = fmt.Sprintf("%s_control-plane-as", clusterID)
 	}
 
