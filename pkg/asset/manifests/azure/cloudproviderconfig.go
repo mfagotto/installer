@@ -9,19 +9,20 @@ import (
 
 // CloudProviderConfig is the azure cloud provider config
 type CloudProviderConfig struct {
-	CloudName                azure.CloudEnvironment
-	TenantID                 string
-	SubscriptionID           string
-	ResourceGroupName        string
-	GroupLocation            string
-	ResourcePrefix           string
-	NetworkResourceGroupName string
-	NetworkSecurityGroupName string
-	VirtualNetworkName       string
-	SubnetName               string
-	ResourceManagerEndpoint  string
-	ARO                      bool
-	UseManagedIdentity       bool
+	CloudName                  azure.CloudEnvironment
+	TenantID                   string
+	SubscriptionID             string
+	ResourceGroupName          string
+	GroupLocation              string
+	ResourcePrefix             string
+	NetworkResourceGroupName   string
+	NetworkSecurityGroupName   string
+	VirtualNetworkName         string
+	SubnetName                 string
+	ResourceManagerEndpoint    string
+	ARO                        bool
+	UseManagedIdentity         bool
+	PrimaryAvailabilitySetName string
 }
 
 // JSON generates the cloud provider json config for the azure platform.
@@ -71,6 +72,10 @@ func (params CloudProviderConfig) JSON() (string, error) {
 	if params.CloudName == azure.StackCloud {
 		config.authConfig.ResourceManagerEndpoint = params.ResourceManagerEndpoint
 		config.UseInstanceMetadata = false
+	}
+
+	if params.PrimaryAvailabilitySetName != "" {
+		config.PrimaryAvailabilitySetName = params.PrimaryAvailabilitySetName
 	}
 
 	buff := &bytes.Buffer{}

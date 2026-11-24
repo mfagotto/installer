@@ -54,3 +54,51 @@ func TestCloudProviderConfig(t *testing.T) {
 	assert.NoError(t, err, "failed to create cloud provider config")
 	assert.Equal(t, expected, json, "unexpected cloud provider config")
 }
+
+func TestCloudProviderConfigNonZonalRegion(t *testing.T) {
+	config := CloudProviderConfig{
+		CloudName:                  azure.PublicCloud,
+		ResourceGroupName:          "clusterid-rg",
+		GroupLocation:              "uaecentral",
+		ResourcePrefix:             "clusterid",
+		SubscriptionID:             "subID",
+		TenantID:                   "tenantID",
+		NetworkResourceGroupName:   "clusterid-rg",
+		NetworkSecurityGroupName:   "clusterid-node-nsg",
+		VirtualNetworkName:         "clusterid-vnet",
+		SubnetName:                 "clusterid-worker-subnet",
+		PrimaryAvailabilitySetName: "clusterid_control-plane-as",
+	}
+	expected := `{
+	"cloud": "AzurePublicCloud",
+	"tenantId": "tenantID",
+	"aadClientId": "",
+	"aadClientSecret": "",
+	"aadClientCertPath": "",
+	"aadClientCertPassword": "",
+	"useManagedIdentityExtension": false,
+	"userAssignedIdentityID": "",
+	"subscriptionId": "subID",
+	"resourceGroup": "clusterid-rg",
+	"location": "uaecentral",
+	"vnetName": "clusterid-vnet",
+	"vnetResourceGroup": "clusterid-rg",
+	"subnetName": "clusterid-worker-subnet",
+	"securityGroupName": "clusterid-node-nsg",
+	"routeTableName": "clusterid-node-routetable",
+	"primaryAvailabilitySetName": "clusterid_control-plane-as",
+	"vmType": "standard",
+	"loadBalancerSku": "standard",
+	"cloudProviderBackoff": true,
+	"useInstanceMetadata": true,
+	"excludeMasterFromStandardLB": false,
+	"cloudProviderBackoffDuration": 6,
+	"putVMSSVMBatchSize": 0,
+	"enableMigrateToIPBasedBackendPoolAPI": false
+}
+`
+
+	json, err := config.JSON()
+	assert.NoError(t, err, "failed to create cloud provider config")
+	assert.Equal(t, expected, json, "unexpected cloud provider config")
+}

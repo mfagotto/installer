@@ -168,19 +168,24 @@ NodeIPFamilies=ipv4
 				break
 			}
 		}
+		primaryAvailabilitySetName := ""
+		if installConfig.Config.Azure.IsNonZonalRegion() {
+			primaryAvailabilitySetName = fmt.Sprintf("%s_control-plane-as", clusterID.InfraID)
+		}
 		azureConfig, err := azure.CloudProviderConfig{
-			CloudName:                installConfig.Config.Azure.CloudName,
-			ResourceGroupName:        installConfig.Config.Azure.ClusterResourceGroupName(clusterID.InfraID),
-			GroupLocation:            installConfig.Config.Azure.Region,
-			ResourcePrefix:           clusterID.InfraID,
-			SubscriptionID:           session.Credentials.SubscriptionID,
-			TenantID:                 session.Credentials.TenantID,
-			NetworkResourceGroupName: nrg,
-			NetworkSecurityGroupName: nsg,
-			VirtualNetworkName:       vnet,
-			SubnetName:               subnet,
-			ResourceManagerEndpoint:  installConfig.Config.Azure.ARMEndpoint,
-			UseManagedIdentity:       installConfig.Config.CreateAzureIdentity(),
+			CloudName:                  installConfig.Config.Azure.CloudName,
+			ResourceGroupName:          installConfig.Config.Azure.ClusterResourceGroupName(clusterID.InfraID),
+			GroupLocation:              installConfig.Config.Azure.Region,
+			ResourcePrefix:             clusterID.InfraID,
+			SubscriptionID:             session.Credentials.SubscriptionID,
+			TenantID:                   session.Credentials.TenantID,
+			NetworkResourceGroupName:   nrg,
+			NetworkSecurityGroupName:   nsg,
+			VirtualNetworkName:         vnet,
+			SubnetName:                 subnet,
+			ResourceManagerEndpoint:    installConfig.Config.Azure.ARMEndpoint,
+			UseManagedIdentity:         installConfig.Config.CreateAzureIdentity(),
+			PrimaryAvailabilitySetName: primaryAvailabilitySetName,
 		}.JSON()
 		if err != nil {
 			return errors.Wrap(err, "could not create cloud provider config")
