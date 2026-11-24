@@ -236,6 +236,12 @@ func (p *Platform) NetworkSecurityGroupName(infraID string) string {
 	return fmt.Sprintf("%s-nsg", infraID)
 }
 
+// IsNonZonalRegion reports whether the configured Azure region does not
+// support Availability Zones and requires Availability Set placement.
+func (p *Platform) IsNonZonalRegion() bool {
+	return strings.EqualFold(p.Region, "uaecentral")
+}
+
 // GetStorageAccountName takes an infraID and generates a
 // storage account name, which can't be more than 24 characters.
 func GetStorageAccountName(infraID string) string {

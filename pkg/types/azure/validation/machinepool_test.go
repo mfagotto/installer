@@ -867,3 +867,55 @@ func TestValidateMachinePool(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateMachinePoolNonZonalRegion(t *testing.T) {
+	cases := []struct {
+		name     string
+		region   string
+		zones    []string
+		expected string
+	}{
+		{
+			name:   "uaecentral empty zones",
+			region: "uaecentral",
+		},
+		{
+			name:   "uaecentral nil zones",
+			region: "uaecentral",
+			zones:  nil,
+		},
+		{
+			name:     "uaecentral with zones",
+			region:   "uaecentral",
+			zones:    []string{"1"},
+			expected: `^test-path\.zones: Invalid value: \["1"\]: Availability Zones are not supported in region uaecentral$`,
+		},
+		{
+			name:   "uaenorth with zones",
+			region: "uaenorth",
+			zones:  []string{"1", "2", "3"},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			pool := &types.MachinePool{
+				Name: "worker",
+				Platform: types.MachinePoolPlatform{
+					Azure: &azure.MachinePool{
+						Zones: tc.zones,
+					},
+				},
+			}
+			platform := &azure.Platform{
+				CloudName: azure.PublicCloud,
+				Region:    tc.region,
+			}
+			err := ValidateMachinePool(pool.Platform.Azure, pool.Name, platform, pool, field.NewPath("test-path")).ToAggregate()
+			if tc.expected == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.Regexp(t, tc.expected, err)
+			}
+		})
+	}
+}

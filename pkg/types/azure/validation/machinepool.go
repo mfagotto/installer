@@ -70,6 +70,11 @@ func ValidateMachinePool(p *azure.MachinePool, poolName string, platform *azure.
 		}
 	}
 
+	if platform.IsNonZonalRegion() && len(p.Zones) > 0 {
+		allErrs = append(allErrs, field.Invalid(fldPath.Child("zones"), p.Zones,
+			fmt.Sprintf("Availability Zones are not supported in region %s", platform.Region)))
+	}
+
 	allErrs = append(allErrs, ValidateEncryptionAtHost(p, platform.CloudName, fldPath.Child("defaultMachinePlatform"))...)
 	if p.OSDisk.DiskEncryptionSet != nil {
 		allErrs = append(allErrs, ValidateDiskEncryption(p, platform.CloudName, fldPath.Child("defaultMachinePlatform"))...)
